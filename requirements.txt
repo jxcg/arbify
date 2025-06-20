@@ -5,9 +5,13 @@ attrs==25.3.0
 bcrypt==4.3.0
 blinker==1.9.0
 cachetools==6.1.0
+captcha==0.7.1
 certifi==2025.6.15
+cffi==1.17.1
 charset-normalizer==3.4.2
 click==8.2.1
+cryptography==45.0.4
+extra-streamlit-components==0.1.80
 Flask==3.1.1
 Flask-Bcrypt==1.0.1
 Flask-JWT-Extended==4.7.1
@@ -30,11 +34,13 @@ pillow==11.2.1
 protobuf==6.31.1
 psycopg2-binary==2.9.10
 pyarrow==20.0.0
+pycparser==2.22
 pydeck==0.9.1
 PyJWT==2.10.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.1.0
 pytz==2025.2
+PyYAML==6.0.2
 referencing==0.36.2
 requests==2.32.4
 rpds-py==0.25.1
@@ -43,6 +49,7 @@ smmap==5.0.2
 SQLAlchemy==2.0.41
 sqlparse==0.5.3
 streamlit==1.46.0
+streamlit-authenticator==0.4.2
 tenacity==9.1.2
 toml==0.10.2
 tornado==6.5.1

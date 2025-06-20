@@ -4,8 +4,4 @@ import yaml
 from yaml.loader import SafeLoader
 import os
 
-
-pages = [st.Page("src/Home.py"), st.Page("src/Calculator.py")]
-
-pg = st.navigation(pages)
-pg.run()
+st.title('Matched Betting / Arbitrage Calculator')
