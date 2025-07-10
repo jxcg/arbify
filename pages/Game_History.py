@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from data.engine import BetInputCalculator
+from data.service import insert_bet, get_all_bets
 
 def safe_float_from_text(label: str, value: str = "", placeholder: str = "") -> float | None:
     text_val = st.text_input(label, value=value, placeholder=placeholder)
@@ -71,3 +72,18 @@ def run():
 
 
     st.subheader("📋 Your Previous Bets")
+    try:
+        bets = get_all_bets()
+        if bets:
+            # If your get_all_bets returns a list of tuples, convert to DataFrame
+            columns = [
+                "id", "bookmaker", "event", "bet_type", "back_stake", "back_odds",
+                "exchange", "lay_odds", "lay_stake", "lay_liability",
+                "bookmaker_profit_loss", "exchange_profit_loss", "net_profit_loss", "notes", "bet_date"
+            ]
+            df = pd.DataFrame(bets, columns=columns[:len(bets[0])])
+            st.dataframe(df)
+        else:
+            st.info("No bets found in your history.")
+    except Exception as e:
+        st.error(f"Could not load bet history: {e}")
