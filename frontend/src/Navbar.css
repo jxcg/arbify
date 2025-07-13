@@ -1,0 +1,46 @@
+/* src/Navbar.css */
+.main-nav {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 32px auto; /* Centers the navbar and adds space below */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid #eff2f5;
+}
+
+.nav-logo a {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1d2b3a;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 16px;
+}
+
+.nav-link {
+  padding: 8px 16px;
+  color: #5a6a7b;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: #f8f9fa;
+  color: #1d2b3a;
+}
+
+/* Style for the currently active link */
+.nav-link.active {
+  background-color: #eef2ff; /* Light Indigo */
+  color: #4f46e5; /* Indigo */
+}
