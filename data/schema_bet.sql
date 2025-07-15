@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS matched_bets (
     bookmaker_profit_loss DECIMAL,
     exchange_profit_loss DECIMAL,
     net_profit_loss DECIMAL,
+    result TEXT DEFAULT 'unsettled', -- back, lay, void, unsettled
     
     -- Optional field for any extra notes
     notes TEXT

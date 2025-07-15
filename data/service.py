@@ -22,7 +22,6 @@ bet_object = {
 
 
 def insert_bet(bet_object):
-    
     bookmaker       = bet_object.get('bookmaker')
     event           = bet_object.get('event')
     bet_type        = bet_object.get('bet_type')
@@ -32,18 +31,19 @@ def insert_bet(bet_object):
     lay_odds        = bet_object.get('lay_odds')
     lay_stake       = bet_object.get('lay_stake')
     lay_liability   = bet_object.get('lay_liability')
-    bookmaker_pl    = bet_object.get('bookmaker_profit_loss')
-    exchange_pl     = bet_object.get('exchange_profit_loss')
-    net_pl          = bet_object.get('net_profit_loss')
+    bookmaker_pl    = bet_object.get('bookmaker_profit_loss') or bet_object.get('bookie_pl')
+    exchange_pl     = bet_object.get('exchange_profit_loss') or bet_object.get('exchange_pl')
     notes           = bet_object.get('notes')
-    
+    result          = bet_object.get('result', 'unsettled')  # default to 'unsettled' if missing
+
     query = """
     INSERT INTO matched_bets (
         bookmaker, event, bet_type, back_stake, back_odds, 
         exchange, lay_odds, lay_stake, lay_liability,
-        bookmaker_profit_loss, exchange_profit_loss, net_profit_loss, notes
+        bookmaker_profit_loss, exchange_profit_loss, notes, result
     ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
+
     params = (
         bookmaker, 
         event, 
@@ -56,13 +56,14 @@ def insert_bet(bet_object):
         lay_liability,
         bookmaker_pl,
         exchange_pl,
-        net_pl,
-        notes
+        notes,
+        result
     )
 
     with get_db() as db:
         result = db.execute(query, params)
-        return result
+        logger.info("Added bet")
+        return True
 
 
 
@@ -81,11 +82,45 @@ def delete_bet(bet_id):
 
 def get_all_bets():
     query = """
-    SELECT * FROM matched_bets
-    ORDER BY bet_date
-    DESC;
+    SELECT
+        id,
+        bookmaker,
+        event,
+        bet_type,
+        back_odds,
+        lay_odds,
+        back_stake,
+        lay_stake,
+        bookmaker_profit_loss,
+        exchange_profit_loss,
+        bet_date,
+        notes,
+        lay_liability,
+        result
+    FROM
+        matched_bets
+    ORDER BY
+        bet_date DESC;
     """
 
     with get_db() as db:
         result = db.execute(query)
         return result
+
+
+
+def update_bet_result(bet_id: int, result: str) -> bool:
+    """Update the result of a bet (e.g., 'back', 'lay', 'void', 'unsettled')."""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE bets SET result = ? WHERE id = ?",
+            (result, bet_id)
+        )
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Error updating bet result: {e}")
+        return False
