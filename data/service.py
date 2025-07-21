@@ -1,24 +1,8 @@
 import logging
+from data.db import get_db
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-from data.db import get_db
-bet_object = {
-    "bookmaker": "Bet365",
-    "event": "Team A vs Team B",
-    "bet_type": "Match Winner",
-    "back_stake": 100.0,
-    "back_odds": 2.5,
-    "exchange": "Betfair",
-    "lay_odds": 2.4,
-    "lay_stake": 104.17,
-    "lay_liability": 150.0,
-    "bookmaker_profit_loss": 150.0,
-    "exchange_profit_loss": -150.0,
-    "net_profit_loss": 0.0,
-    "notes": "Arbitrage opportunity"
-}
-
 
 
 def insert_bet(bet_object):
@@ -34,93 +18,83 @@ def insert_bet(bet_object):
     bookmaker_pl    = bet_object.get('bookmaker_profit_loss') or bet_object.get('bookie_pl')
     exchange_pl     = bet_object.get('exchange_profit_loss') or bet_object.get('exchange_pl')
     notes           = bet_object.get('notes')
-    result          = bet_object.get('result', 'unsettled')  # default to 'unsettled' if missing
+    result          = bet_object.get('result', 'unsettled')
 
     query = """
-    INSERT INTO matched_bets (
-        bookmaker, event, bet_type, back_stake, back_odds, 
-        exchange, lay_odds, lay_stake, lay_liability,
-        bookmaker_profit_loss, exchange_profit_loss, notes, result
-    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        INSERT INTO matched_bets (
+            bookmaker, event, bet_type, back_stake, back_odds, 
+            exchange, lay_odds, lay_stake, lay_liability,
+            bookmaker_profit_loss, exchange_profit_loss, notes, result
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
 
     params = (
-        bookmaker, 
-        event, 
-        bet_type, 
-        back_stake, 
-        back_odds, 
-        exchange, 
-        lay_odds,
-        lay_stake,
-        lay_liability,
-        bookmaker_pl,
-        exchange_pl,
-        notes,
-        result
+        bookmaker, event, bet_type, back_stake, back_odds,
+        exchange, lay_odds, lay_stake, lay_liability,
+        bookmaker_pl, exchange_pl, notes, result
     )
 
-    with get_db() as db:
-        result = db.execute(query, params)
-        logger.info("Added bet")
-        return True
-
+    try:
+        with get_db() as db:
+            db.execute(query, params)
+            logger.info("✅ Bet added successfully.")
+            return True
+    except Exception as e:
+        logger.error(f"❌ Failed to insert bet: {e}")
+        return False
 
 
 def delete_bet(bet_id):
-    query = """
-    DELETE FROM bets
-    WHERE id = %s
-    RETURNING id;
-    """
-    params = (bet_id,)
-    with get_db() as db:
-        result = db.execute(query, params)
-        return result
-
+    query = "DELETE FROM matched_bets WHERE id = %s RETURNING id;"
+    try:
+        with get_db() as db:
+            result = db.execute(query, (bet_id,))
+            return result.fetchone() is not None
+    except Exception as e:
+        logger.error(f"❌ Failed to delete bet {bet_id}: {e}")
+        return False
 
 
 def get_all_bets():
     query = """
-    SELECT
-        id,
-        bookmaker,
-        event,
-        bet_type,
-        back_odds,
-        lay_odds,
-        back_stake,
-        lay_stake,
-        bookmaker_profit_loss,
-        exchange_profit_loss,
-        bet_date,
-        notes,
-        lay_liability,
-        result
-    FROM
-        matched_bets
-    ORDER BY
-        bet_date DESC;
+        SELECT
+            id,
+            bet_date,
+            bookmaker,
+            event,
+            bet_type,
+            back_stake,
+            back_odds,
+            exchange,
+            lay_odds,
+            lay_stake,
+            lay_liability,
+            bookmaker_profit_loss,
+            exchange_profit_loss,
+            net_profit_loss,
+            result,
+            notes
+        FROM matched_bets
+        ORDER BY bet_date DESC;
     """
-
-    with get_db() as db:
-        result = db.execute(query)
-        return result
+    try:
+        with get_db() as db:
+            result = db.execute(query)
+            return result
+    except Exception as e:
+        logger.error(f"❌ Failed to fetch bets: {e}")
+        return []
 
 
 
 def update_bet_result(bet_id: int, result: str) -> bool:
-    """Update the result of a bet (e.g., 'back', 'lay', 'void', 'unsettled')."""
+    """Update the result of a bet ('back', 'lay', 'void', 'unsettled')."""
+    query = "UPDATE matched_bets SET result = %s WHERE id = %s;"
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute(
-            "UPDATE bets SET result = ? WHERE id = ?",
-            (result, bet_id)
-        )
-        conn.commit()
-        conn.close()
-        return True
+        with get_db() as db:
+            db.execute(query, (result, bet_id))
+            logger.info(f"✅ Updated result for bet {bet_id} to '{result}'")
+            return True
     except Exception as e:
-        print(f"Error updating bet result: {e}")
+        logger.error(f"❌ Failed to update result for bet {bet_id}: {e}")
         return False
