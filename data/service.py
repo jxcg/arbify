@@ -70,7 +70,7 @@ def delete_bet(bet_id):
     try:
         with get_db() as db:
             result = db.execute(query, (bet_id,))
-            return result.fetchone() is not None
+            return result is not None
     except Exception as e:
         logger.error(f"❌ Failed to delete bet {bet_id}: {e}")
         return False

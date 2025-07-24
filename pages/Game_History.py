@@ -16,6 +16,8 @@ def safe_float_from_text(label: str, value: str = "", placeholder: str = "") -> 
         st.error(f'Invalid input for "{label}". Please enter a valid number.', icon="🚨")
         return None
 
+
+
 def compute_row_profit(row):
     try:
         back_stake = float(row.get("Back Stake", 0.0))
@@ -50,6 +52,8 @@ def compute_row_profit(row):
         return 0.0
     else:
         return 0.0
+
+
 
 def run():
     st.set_page_config(layout="wide")
