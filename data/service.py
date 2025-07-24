@@ -5,6 +5,27 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+
+def get_profit_over_time():
+    query = """
+        SELECT 
+            DATE(bet_date) AS date,
+            SUM(net_profit_loss) AS daily_profit
+        FROM matched_bets
+        WHERE net_profit_loss IS NOT NULL
+        GROUP BY DATE(bet_date)
+        ORDER BY date ASC;
+    """
+    try:
+        with get_db() as db:
+            rows = db.execute(query)
+            return rows
+    except Exception as e:
+        logger.error(f"❌ Failed to get stats: {e}")
+        return []
+
+
+
 def insert_bet(bet_object):
     bookmaker       = bet_object.get('bookmaker')
     event           = bet_object.get('event')

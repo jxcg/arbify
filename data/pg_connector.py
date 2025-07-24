@@ -53,3 +53,6 @@ class PostgresDB:
         except psycopg2.Error as e:
             print(f"Query error: {e}")
             return None
+
+
+
