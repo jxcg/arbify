@@ -18,7 +18,7 @@ class MatchedBetCalculator:
         mbibl: bool = False
     ):
         """
-        Initialize the matched bet calculator.
+        Initialise the matched bet calculator.
         
         Parameters:
         - back_stake: Back stake amount

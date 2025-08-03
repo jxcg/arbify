@@ -42,9 +42,6 @@ def show_auth_gate():
 # Routing logic
 if is_authenticated():
     nav = st.navigation(protected_pages)
-    if st.button("Logout"):
-        cookies["user_id"] = ""
-        cookies["username"] = ""
     nav.run()
 else:
     show_auth_gate()
