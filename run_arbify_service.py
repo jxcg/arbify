@@ -1,14 +1,27 @@
 import streamlit as st
 from pages import Home, Game_History, Login, Register
+from streamlit_cookies_manager import EncryptedCookieManager
+
+cookies = EncryptedCookieManager(password=st.secrets["cookie_password"])
+if not cookies.ready():
+    st.stop()
+
 
 def is_authenticated():
-    return st.session_state.get("authenticated", False)
+    return cookies.get("user_id") is not None
+
+
+
 
 def home_page():
     Home.run()
 
+
+
 def game_page():
     Game_History.run()
+
+
 
 protected_pages = [
     st.Page(home_page, title="Arbify", icon="🏠"),
@@ -21,7 +34,7 @@ def show_auth_gate():
     tab1, tab2 = st.tabs(["Login", "Register"])
 
     with tab1:
-        Login.main()
+        Login.login_page(cookies)
 
     with tab2:
         Register.main()
@@ -29,6 +42,9 @@ def show_auth_gate():
 # Routing logic
 if is_authenticated():
     nav = st.navigation(protected_pages)
+    if st.button("Logout"):
+        cookies["user_id"] = ""
+        cookies["username"] = ""
     nav.run()
 else:
     show_auth_gate()
