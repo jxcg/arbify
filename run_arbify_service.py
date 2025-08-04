@@ -1,5 +1,7 @@
 import streamlit as st
 from pages import Home, Game_History
+import streamlit_cookies_manager
+
 
 def home_page():
     Home.run()
