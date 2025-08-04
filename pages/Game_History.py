@@ -3,6 +3,8 @@ import pandas as pd
 from data.engine import MatchedBetCalculator
 from data.service import insert_bet, get_all_bets, update_bet_result
 
+
+
 def safe_float_from_text(label: str, value: str = "", placeholder: str = "") -> float | None:
     text_val = st.text_input(label, value=value, placeholder=placeholder)
     try:
@@ -56,7 +58,6 @@ def compute_row_profit(row):
 
 
 def run():
-    st.set_page_config(layout="wide")
     st.title("Game History & Bet Calculator")
 
     # Bet Calculator

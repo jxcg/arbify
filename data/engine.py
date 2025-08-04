@@ -41,12 +41,16 @@ class MatchedBetCalculator:
         self.free_bet_val = free_bet_val
         self.mbibl = mbibl
     
+
+
     def get_bet_type(self) -> str:
         """Return the type of bet being calculated"""
         if self.free_bet:
             return 'Free Bet (Stake Returned)' if self.free_sr else 'Free Bet (Stake Not Returned)'
         return 'Qualifying/Welcome Bet'
     
+
+
     def get_required_lay_stake(self) -> float:
         """Calculate the ideal lay stake for even profit"""
         if self.free_bet:
@@ -60,10 +64,14 @@ class MatchedBetCalculator:
             # Qualifying/welcome bet
             return self.back_odds * self.back_stake / (self.lay_odds - self.lay_cms)
     
+
+
     def get_lay_liability(self, lay_stake: float) -> float:
         """Calculate the lay liability (potential loss on lay bet)"""
         return lay_stake * (self.lay_odds - 1)
     
+
+
     def get_total_profit(self) -> dict:
         """Calculate profits for both win scenarios"""
         lay_stake = self.get_required_lay_stake()
@@ -143,6 +151,8 @@ class MatchedBetCalculator:
             # For qualifying/welcome bets
             return lay_stake * (1 - self.lay_cms) - self.back_stake
     
+
+
     def summary(self) -> str:
         """Return a formatted summary of the calculation"""
         lay_stake = self.get_required_lay_stake()
@@ -155,6 +165,8 @@ class MatchedBetCalculator:
             f"Profit if Lay Wins: £{profits['lay_wins']:.2f}"
         )
     
+
+
     def detailed_summary(self) -> str:
         """Return a detailed formatted summary"""
         lay_stake = self.get_required_lay_stake()
@@ -181,4 +193,3 @@ class MatchedBetCalculator:
             f"FINAL PROFIT: £{final_profit:.2f}\n"
             f"{'='*50}"
         )
-
