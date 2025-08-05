@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 class MatchedBetCalculator:
     """
     Matched bet calculator for qualifying bets, welcome bets, and free bets.

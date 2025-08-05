@@ -1,5 +1,6 @@
 import logging
 from data.db import get_db
+import streamlit as st
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -7,6 +8,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_profit_over_time():
+    user = None
+
     query = """
         SELECT 
             DATE(bet_date) AS date,
@@ -17,16 +20,23 @@ def get_profit_over_time():
         ORDER BY date ASC;
     """
     try:
+        user = st.session_state.get("user")
         with get_db() as db:
             rows = db.execute(query)
+            logger.info(f"USER: {user.get_ip()} - Obtained stats of: {len(rows)} rows")
             return rows
     except Exception as e:
-        logger.error(f"❌ Failed to get stats: {e}")
+        logger.error(f"USER: {user.get_ip()} - ❌ Failed to get stats: {e}")
         return []
 
 
 
 def insert_bet(bet_object):
+    
+    # Record size of bet object
+
+    logger.info(f"Bet Object is of has: {len(bet_object)} attributes")
+
     bookmaker       = bet_object.get('bookmaker')
     event           = bet_object.get('event')
     bet_type        = bet_object.get('bet_type')
@@ -101,6 +111,7 @@ def get_all_bets():
     try:
         with get_db() as db:
             result = db.execute(query)
+            logger.info(f"Processed {len(result)} rows")
             return result
     except Exception as e:
         logger.error(f"❌ Failed to fetch bets: {e}")

@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 from data.engine import MatchedBetCalculator
-from data.service import insert_bet, get_all_bets, update_bet_result
 
 
 
@@ -149,6 +148,7 @@ def run():
                     "exchange_profit_loss": profits['back_wins']['exchange_pl'],
                     "notes": ""
                 }
+                from data.service import insert_bet
                 if insert_bet(bet_object):
                     st.success("Bet saved successfully!")
                     st.rerun()
@@ -161,6 +161,7 @@ def run():
     # Game History
     st.subheader("📋 Your Previous Bets")
     try:
+        from data.service import get_all_bets
         bets_data = get_all_bets()
         if bets_data:
             columns = [
@@ -225,6 +226,7 @@ def run():
                     for index, row in changed_rows.iterrows():
                         bet_id = int(original_df.iloc[index]["id"])
                         new_result = row["Result"]
+                        from data.service import update_bet_result
                         success = update_bet_result(bet_id, new_result)
                         if success:
                             st.success(f"✅ Updated result for Bet ID {bet_id} to '{new_result}'")

@@ -1,6 +1,16 @@
 import streamlit as st
 from pages import Home, Game_History
 import streamlit_cookies_manager
+from data.user import User
+
+# Unique user state session
+if "user" not in st.session_state:
+    st.session_state["user"] = User()
+
+user = st.session_state.get("user")
+
+print(st.session_state)
+print(user)
 
 
 def home_page():
