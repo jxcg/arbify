@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_profit_over_time():
-    user = None
+    user = st.session_state.get("user")
 
     query = """
         SELECT 
@@ -20,7 +20,6 @@ def get_profit_over_time():
         ORDER BY date ASC;
     """
     try:
-        user = st.session_state.get("user")
         with get_db() as db:
             rows = db.execute(query)
             logger.info(f"USER: {user.get_ip()} - Obtained stats of: {len(rows)} rows")
